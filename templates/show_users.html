@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block body %}
+	<h1>Show Users</h1>
+  <ul class=entries>
+  {% for user in users %}
+    <li>
+      <h2>{{ user.title }}</h2>
+      <div> password: {{ user.password }}</div>
+  {% else %}
+    <li><em>Unbelievable.  No users here so far</em>
+  {% endfor %}
+  </ul>
+{% endblock %}
