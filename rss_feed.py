@@ -25,12 +25,20 @@ def init_db():
   db.commit()
 
 
+# init the db
 @app.cli.command('initdb')
 def initdb_command():
   # Initializes the database.
   init_db()
   print 'Initialized the database.'
 
+
+# clear the db
+@app.cli.command('cleardb')
+def cleardb_command():
+	db = get_db()
+	db.execute('delete from users')
+	db.commit()
 
 def get_db():
   # Opens a new database connection if there is none yet for the current application context.
@@ -48,12 +56,28 @@ def close_db(error):
 
 # ROUTES
 @app.route('/')
-def indexPage():
+def index_page():
   db = get_db()
   cur = db.execute('select username, password from users order by id desc')
   users = cur.fetchall()
   return render_template('show_users.html', users=users)
 
 
+@app.route('/new-user', methods=['GET', 'POST'])
+def new_user():
+	return render_template('create_user.html')
+
+@app.route('/create-user', methods=['GET', 'POST'])
+def create_user():
+	db = get_db()
+	db.execute('insert into users (username, password) values (?, ?)',[request.form['username'], request.form['password']])
+	db.commit()
+	return redirect(url_for('index_page'))
+
+
+# @app.route('/profile/<username>')
+# def profile(username):
+
 if __name__ == '__main__':
   app.run()
+

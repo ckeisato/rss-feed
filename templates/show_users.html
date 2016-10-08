@@ -4,7 +4,7 @@
   <ul class=entries>
   {% for user in users %}
     <li>
-      <h2>{{ user.title }}</h2>
+      <div>user: {{ user.username }}</div>
       <div> password: {{ user.password }}</div>
   {% else %}
     <li><em>Unbelievable.  No users here so far</em>
