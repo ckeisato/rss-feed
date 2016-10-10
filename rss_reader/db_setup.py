@@ -2,15 +2,7 @@ import os
 import sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 
-app = Flask(__name__)
-app.config.from_object(__name__)
-
-app.config.update(dict(
-	DATABASE=os.path.join(app.root_path, 'rss_feed.db'),
-	SECRET_KEY='development_key',
-	USERNAME='admin',
-	PASSWORD='default'
-))
+from rss_reader import app
 
 def connect_db():
   rv = sqlite3.connect(app.config['DATABASE'])
@@ -52,32 +44,3 @@ def close_db(error):
   # Closes the database again at the end of the request.
   if hasattr(g, 'sqlite_db'):
     g.sqlite_db.close()
-
-
-# ROUTES
-@app.route('/')
-def index_page():
-  db = get_db()
-  cur = db.execute('select username, password from users order by id desc')
-  users = cur.fetchall()
-  return render_template('show_users.html', users=users)
-
-
-@app.route('/new-user', methods=['GET', 'POST'])
-def new_user():
-	return render_template('create_user.html')
-
-@app.route('/create-user', methods=['GET', 'POST'])
-def create_user():
-	db = get_db()
-	db.execute('insert into users (username, password) values (?, ?)',[request.form['username'], request.form['password']])
-	db.commit()
-	return redirect(url_for('index_page'))
-
-
-# @app.route('/profile/<username>')
-# def profile(username):
-
-if __name__ == '__main__':
-  app.run()
-
