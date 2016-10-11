@@ -1,7 +1,12 @@
 from rss_reader import app
-from flask import render_template, request, redirect, flash
+from flask import render_template, session, request, redirect, flash, url_for
+from flask.ext.session import Session
 
 import db_setup
+import pdb
+
+Session(app)
+
 # ROUTES
 @app.route('/')
 def index_page():
@@ -22,19 +27,28 @@ def create_user():
 	return redirect(url_for('index_page'))
 
 
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+  db = db_setup.get_db()
+  username = db.execute("select username from users where id =" + session['user-id']).fetchone()[0]
+  feed = db.execute("select feeds from users where id =" + session['user-id']).fetchone()[0]
+  return render_template('profile.html', username=username, feed=feed)
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-  error = None
+  db = db_setup.get_db()
   if request.method == 'POST':
-    if request.form['username'] != app.config['USERNAME']:
-      error = 'Invalid username'
-    elif request.form['password'] != app.config['PASSWORD']:
-      error = 'Invalid password'
+    username = request.form['username']
+    password = request.form['password']
+    user_id = db.execute("select id from users where username = " + username + " and password = " + password)
+
+    if user_id != None:
+      session['user-id'] = str(user_id.fetchone()[0])
+      return redirect(url_for('profile'))
     else:
-      session['logged_in'] = True
-      flash('You were logged in')
-      return redirect(url_for('show_entries'))
-  return render_template('login.html', error=error)
+      return redirect(url_for('create-user'))
+  return render_template('login.html')
+
 
 
 @app.route('/logout')
