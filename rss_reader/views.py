@@ -42,6 +42,7 @@ def profile():
   db = db_setup.get_db()
   username = db.execute("select username from users where id =" + session['user-id']).fetchone()[0]
   feed = db.execute("select feeds from users where id =" + session['user-id']).fetchone()[0]
+  feed = feed.split(",")
   return render_template('profile.html', username=username, feedArray=feed)
 
 @app.route('/login', methods=['GET', 'POST'])
