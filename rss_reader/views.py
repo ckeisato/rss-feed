@@ -42,7 +42,6 @@ def profile():
 def login():
   if request.method == 'POST':
     user_id = rss_db.get_user_id(request.form['username'], request.form['password'])
-
     if user_id is not None:
       session['user-id'] = user_id
       return redirect(url_for('profile'))

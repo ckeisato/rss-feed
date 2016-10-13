@@ -1,6 +1,7 @@
 import os
 import sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
+from flask.ext.session import Session
 
 from rss_reader import app
 import pdb
@@ -34,8 +35,11 @@ def get_loggedin_user(_id):
 
 def get_loggedin_feeds(_id):
   db = get_db()
-  feeds = db.execute("select feeds from users where id =" + _id).fetchone()[0]
-  return feeds.split(",")
+  feeds = db.execute("select feeds from users where id =" + _id).fetchone()
+  if feeds is None:
+    return None
+  else: 
+    return feeds[0].split(",")
 
 def get_user_id(username, password):
   db = get_db()
