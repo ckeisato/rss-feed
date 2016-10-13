@@ -43,13 +43,12 @@ def login():
   if request.method == 'POST':
     user_id = rss_db.get_user_id(request.form['username'], request.form['password'])
 
-    if user_id != None:
-      session['user-id'] = str(user_id.fetchone()[0])
+    if user_id is not None:
+      session['user-id'] = user_id
       return redirect(url_for('profile'))
     else:
-      return redirect(url_for('create-user'))
+      return redirect(url_for('new_user'))
   return render_template('login.html')
-
 
 
 @app.route('/logout')
