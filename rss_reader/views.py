@@ -21,7 +21,7 @@ def new_user():
 
 @app.route('/create-user', methods=['GET', 'POST'])
 def create_user():
-	db= db_setup.get_db()
+	db = db_setup.get_db()
 	db.execute('insert into users (username, password, feeds) values (?, ?, ?)',[request.form['username'], request.form['password'], ''])
 	db.commit()
 	return redirect(url_for('index_page'))
@@ -29,7 +29,12 @@ def create_user():
 
 @app.route('/add_feed', methods=['GET', 'POST'])
 def add_feed():
-  
+  if request.method == 'POST':
+    feed = request.form['new-feed-entry']
+    db = db_setup.get_db()
+    db.execute("update users set feeds = '" + feed + "," + "' || feeds where id=" + session['user-id'])  
+    db.commit()
+  return redirect(url_for('profile'))
 
 
 @app.route('/profile', methods=['GET', 'POST'])
