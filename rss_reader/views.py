@@ -2,7 +2,7 @@ from rss_reader import app
 from flask import render_template, session, request, redirect, flash, url_for
 from flask.ext.session import Session
 
-import db_setup
+import rss_db
 import pdb
 
 Session(app)
@@ -10,9 +10,7 @@ Session(app)
 # ROUTES
 @app.route('/')
 def index_page():
-  db = db_setup.get_db()
-  cur = db.execute('select username, password from users order by id desc')
-  users = cur.fetchall()
+  users = rss_db.get_users()
   return render_template('show_users.html', users=users)
 
 @app.route('/new-user', methods=['GET', 'POST'])
@@ -21,37 +19,29 @@ def new_user():
 
 @app.route('/create-user', methods=['GET', 'POST'])
 def create_user():
-	db = db_setup.get_db()
-	db.execute('insert into users (username, password, feeds) values (?, ?, ?)',[request.form['username'], request.form['password'], ''])
-	db.commit()
-	return redirect(url_for('index_page'))
+  rss_db.create_user(request.form['username'], request.form['password'])
+  return redirect(url_for('index_page'))
 
 
 @app.route('/add_feed', methods=['GET', 'POST'])
 def add_feed():
   if request.method == 'POST':
     feed = request.form['new-feed-entry']
-    db = db_setup.get_db()
-    db.execute("update users set feeds = '" + feed + "," + "' || feeds where id=" + session['user-id'])  
-    db.commit()
+    rss_db.add_feed(feed, session['user-id'])
   return redirect(url_for('profile'))
 
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
-  db = db_setup.get_db()
-  username = db.execute("select username from users where id =" + session['user-id']).fetchone()[0]
-  feed = db.execute("select feeds from users where id =" + session['user-id']).fetchone()[0]
-  feed = feed.split(",")
-  return render_template('profile.html', username=username, feedArray=feed)
+  username = rss_db.get_loggedin_user(session['user-id'])
+  feeds = rss_db.get_loggedin_feeds(session['user-id'])
+  return render_template('profile.html', username=username, feedArray=feeds)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-  db = db_setup.get_db()
   if request.method == 'POST':
-    username = request.form['username']
-    password = request.form['password']
-    user_id = db.execute("select id from users where username = '" + username + "' and password = '" + password + "'")
+    user_id = rss_db.get_user_id(request.form['username'], request.form['password'])
 
     if user_id != None:
       session['user-id'] = str(user_id.fetchone()[0])

@@ -6,7 +6,7 @@ from flask.ext.session import Session
 app = Flask(__name__)
 
 
-import db_setup
+import rss_db
 import views
 
 app.secret_key = 'super secret key'
