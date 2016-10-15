@@ -9,7 +9,8 @@ app = Flask(__name__)
 import rss_db
 import views
 
-app.secret_key = 'super secret key'
+app.secret_key = os.urandom(24)
+
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
 

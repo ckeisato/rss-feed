@@ -42,6 +42,7 @@ def profile():
 def login():
   if request.method == 'POST':
     user_id = rss_db.get_user_id(request.form['username'], request.form['password'])
+    # pdb.set_traces()
     if user_id is not None:
       session['user-id'] = user_id
       return redirect(url_for('profile'))
@@ -52,8 +53,25 @@ def login():
 
 @app.route('/logout')
 def logout():
-    session.pop('logged_in', None)
-    flash('You were logged out')
-    return redirect(url_for('show_entries'))
-    
+    session['user-id'] = 0
+    return redirect(url_for('index_page'))
 
+
+@app.route('/is_logged_in')
+def is_logged_in():
+  if 'user-id' in session:
+    return True
+  return False
+
+
+@app.route('/getsession')
+def getsession():
+  if 'user-id' in session:
+    return session['user-id']
+  else:
+    return 'not logged in'
+
+@app.route('/dropsession')
+def dropsession():
+  session.pop('user-id', None)
+  return 'dropped'

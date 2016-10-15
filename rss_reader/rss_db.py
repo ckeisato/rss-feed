@@ -51,7 +51,7 @@ def get_user_id(username, password):
 
 def create_user(username, password):
   db = get_db()
-  db.execute('insert into users (username, password, feeds) values (?, ?, ?)',[username, password, ''])
+  db.execute('insert into users (username, password, feeds) values (?, ?, ?)',[username, password, None])
   db.commit()
 
 def add_feed(feed, id):
