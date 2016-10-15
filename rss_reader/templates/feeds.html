@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h3>Feeds for {{username}}</h3>
+
+  <ul>
+    {% for feed in feedArray %}
+      <li>{{feed}}</li>
+    {% endfor %}
+  </ul>
+
+{% endblock %}

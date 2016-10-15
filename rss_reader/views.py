@@ -37,6 +37,12 @@ def profile():
   feeds = rss_db.get_loggedin_feeds(session['user-id'])
   return render_template('profile.html', username=username, feedArray=feeds)
 
+@app.route('/feeds', methods=['GET', 'POST'])
+def feeds():
+  username = rss_db.get_loggedin_user(session['user-id'])
+  feeds = rss_db.get_loggedin_feeds(session['user-id'])
+  return render_template('feeds.html', username=username, feedArray=feeds)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
