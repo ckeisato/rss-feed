@@ -1,6 +1,6 @@
 from rss_reader import app
 from flask import render_template, session, request, redirect, flash, url_for
-from flask.ext.session import Session
+from flask_session import Session
 
 import rss_db
 import pdb

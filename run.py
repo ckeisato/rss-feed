@@ -1,4 +1,4 @@
 from rss_reader import app
-import os
+from os import environ
 
-app.run(debug=True, host='0.0.0.0')
+app.run(debug=True, port=environ.get("PORT", 5000))

@@ -1,7 +1,7 @@
 import os
 import sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
-from flask.ext.session import Session
+from flask_session import Session
 
 from rss_reader import app
 import pdb
